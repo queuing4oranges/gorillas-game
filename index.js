@@ -36,36 +36,6 @@ function newGame () { // Generates metadata for the game
     draw();
 }
 
-
-function draw() {
-	ctx.save();
-	
-	// Flip buildings upside down
-	ctx.translate(0, window.innerHeight);
-	ctx.scale(1,-1)
-	
-	// Draw the scene
-	drawBackground();
-	drawBackgroundBuildings();
-	drawBuildings();
-	drawGorilla(1);
-	drawGorilla(2);
-	// drawBomb();
-	
-
-	ctx.restore();
-}
-
-function throwBomb() {
-					
-	
-	//
-}
-
-function animate(timestamp) {
-	//
-}
-
 function generateBackgroundBuilding(index) { // Generating a background buildings array
 	const previousBuilding = state.backgroundBuildings(index - 1)
 	
@@ -82,29 +52,6 @@ function generateBackgroundBuilding(index) { // Generating a background building
 	const height = minHeight + Math.random() * (maxHeight - minHeight);
 	
 	state.backgroundBuildings.push({ x, width, height });
-}
-
-function drawBackgroundBuildings() { // Looping over the background buildings array
-	state.backgroundBuildings.forEach((building) => {
-	ctx.fillStyle = "#947285";
-	ctx.fillRect(building.x, 0, building.width, building.height)
-	});
-}
-
-function drawBackground() {
-	const gradient = ctx.createLinearGradient(0, 0, 0, window.innerHeight);
-	gradient.addColorStop(1, "#F8BA85");
-	gradient.addColorStop(0, "#FFC28E");
-	
-	// Sky
-	ctx.fillStyle = gradient;
-	ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-	
-	// Moon
-	ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-	ctx.beginPath();
-	ctx.arc(300, 350, 60, 0, 2*Math.PI);
-	ctx.fill();
 }
 
 function generateBuilding(index) { // // Generating a buildings array
@@ -137,10 +84,57 @@ function generateBuilding(index) { // // Generating a buildings array
 		lightsOn.push(light);
 	}
 	
-	state.backgroundBuildings.push({ x, width, height, lightsOn });
+	state.buildings.push({ x, width, height, lightsOn });
 }
 
-function drawBackgroundBuildings() { // Looping over the buildings array
+function initializeBombPosition() {
+	//
+}
+
+
+function draw() {
+	ctx.save();
+
+	// Flip buildings upside down
+	ctx.translate(0, window.innerHeight);
+	ctx.scale(1,-1)
+
+	// Draw the scene
+	drawBackground();
+	drawBackgroundBuildings();
+	drawBuildings();
+	drawGorilla(1);
+	drawGorilla(2);
+	// drawBomb();
+
+	ctx.restore();
+}
+
+function drawBackground() {
+	const gradient = ctx.createLinearGradient(0, 0, 0, window.innerHeight);
+	gradient.addColorStop(1, "#F8BA85");
+	gradient.addColorStop(0, "#FFC28E");
+
+	// Sky
+	ctx.fillStyle = gradient;
+	ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+	// Moon
+	ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+	ctx.beginPath();
+	ctx.arc(300, 350, 60, 0, 2*Math.PI);
+	ctx.fill();
+}
+
+function drawBackgroundBuildings() { // Looping over the background buildings array
+	state.backgroundBuildings.forEach((building) => {
+	ctx.fillStyle = "#947285";
+	ctx.fillRect(building.x, 0, building.width, building.height)
+	});
+}
+
+
+function drawBuildings() { // Looping over the buildings array
 	state.backgroundBuildings.forEach((building) => {
 		// Buildings
 		ctx.fillStyle = "#4A3C68";
@@ -220,7 +214,8 @@ function drawGorillaBody() {
 }
 
 function drawGorillaLeftArm() {
-	ctx.fillStyle = "black"
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 18;
 	
 	ctx.beginPath();
 	ctx.moveTo(-14, 50);
@@ -235,7 +230,8 @@ function drawGorillaLeftArm() {
 }
 
 function drawGorillaRightArm() {
-	ctx.fillStyle = "black"
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 18;
 	
 	ctx.beginPath();
 	ctx.moveTo(-14, 50);
@@ -247,4 +243,58 @@ function drawGorillaRightArm() {
 	}
 	
 	ctx.stroke();	
+}
+
+function drawnGorillaFace(player) {
+	//Face - one big circle, two small
+	ctx.fillStyle = "pink";
+	ctx.beginPath();
+	ctx.arc(0, 63, 9, 0, 2 * Math.PI); // Draw face as arc
+	ctx.moveTo(-3.5, 70); // Draw 2 more circles
+	ctx.arc(-3.5, 70, 4, 0, 2 * Math.PI);
+	ctx.moveTo(+3.5, 70);
+	ctx.arc(+3.5, 70, 4, 0, 2 * Math.PI);
+	ctx.fill();
+
+	// Eyes - two smaller circles
+	ctx.fillStyle = "black";
+	ctx.beginPath();
+	ctx.arc(-3.5, 70, 1.4, 0, 2 * Math.PI);
+	ctx.moveTo(+3.5, 70);
+	ctx.arc(+3.5, 70, 1.4, 0, 2 * Math.PI);
+	ctx.fill();
+
+	// Nose - two lines
+	ctx.strokeStyle = "black";
+	ctx.lineWidth = 1.4;
+
+	ctx.beginPath();
+	ctx.moveTo(-3.5, 66.5);
+	ctx.lineTo(-1.5, 65);
+	ctx.moveTo(3.5, 66.5);
+	ctx.lineTo(1.5, 65);
+	ctx.stroke();
+
+	// Mouth - two types
+	ctx.beginPath();
+	if(state.phase === "celebrating" && state.currentPlayer === player) {
+		ctx.moveTo(-5, 60); // Celebrating
+		ctx.quadraticCurveTo(0, 56, 5, 60);
+	} else {
+		ctx.moveTo(-5, 56); // Grumpy
+		ctx.quadraticCurveTo(0, 60, 5, 56);
+	}
+	ctx.stroke();
+}
+
+function drawBomb() {
+	//
+}
+
+function throwBomb() {
+	//
+}
+
+function animate(timestamp) {
+	//
 }
